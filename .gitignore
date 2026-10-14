@@ -1,0 +1,20 @@
+# 依赖（Electron 运行时约 930MB，不入库）
+node_modules/
+
+# 构建/调试产物：视频抽帧、渲染预览、对比图等（约 290MB）
+build/
+
+# 日志
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+*.tmp
+
+# 运行时生成（宠物配置保存在 %APPDATA%\firefly-pet，不在仓库内）
+render-debug.png

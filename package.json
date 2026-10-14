@@ -1,0 +1,23 @@
+{
+  "name": "firefly-pet",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Q 版《崩坏：星穹铁道》流萤（Firefly）桌面宠物 —— 脱离 agent 独立运行的透明置顶小窗",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "reset": "electron . --reset"
+  },
+  "keywords": [
+    "desktop-pet",
+    "electron",
+    "firefly",
+    "star-rail",
+    "桌宠"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^44.7.2"
+  }
+}
