@@ -17,6 +17,7 @@
 | `pet-config\银白少女-config.jsonc` | 桌宠配置（19 条 AI 动画的池、权重、事件映射） | 成品 |
 | `dist\webm\` | **106 条透明动画成品**（VP9-alpha，2160×1215） | 成品 |
 | `memes\` | 4 张表情包 PNG（微笑/眨眼/惊讶/害羞） | 成品 |
+| `pic\` | 6 张系统通知图标 PNG（512×512 透明底，替换插件包内 `assets\pic\notify-*.png`） | 成品 |
 | `jimeng-prompts\` | 106 个动作的**单条配方**（约 2KB/条，可直接粘进 AI 视频工具） | 配方 |
 | `prompts\` | 配方合订本（`action-10s.md`）、通知图标提示词、动作名对照表 | 配方 |
 | `character\` | 角色母版：绿幕首帧 `first_frame_green.png`、立绘、三视图设定表 | 配方 |
@@ -239,11 +240,24 @@ python tools\verify_deploy.py     # 部署后：配置里每个名字都要有�
 
 > 想重裁（比如换了参考图）：跑 `python tools\probe_faces.py` 定位表情区域，改 `tools\make_memes.py` 里的 REGIONS 坐标再跑。
 
-## 通知图标（6 张，已替换）
+## 通知图标（6 张，成品在 `pic\`）
 
-`prompts\notify-icons.md` = 6 张系统通知图标提示词（对话完成 / 生成失败 / 输出截断 / 权限申请 / 用户选择 / 测试），已改写为你的角色；成品在 `work\icons\`（512×512 透明底）与对照图 `work\icons_sheet.png`。
+`prompts\notify-icons.md` = 6 张系统通知图标提示词（对话完成 / 生成失败 / 输出截断 / 权限申请 / 用户选择 / 测试），已改写为你的角色。
 
-**已经替换**进插件包 `profiles\desktop\node_modules\dsh-pet\assets\pic\notify-*.png`（原图备份在 `work\backup\pic\`）。通知图标**没有用户目录覆盖路径**，只能这样替换，且**插件更新会被覆盖**；恢复原图标 = 把 `work\backup\pic\*.png` 拷回包内同名路径。注意这是**全局**的（所有宠物共用一套通知图标）。
+**成品就在本仓库** `pic\notify-{done,error,truncated,approval,question,test}.png`（512×512、透明底、同一角色同一画风），对照图见 `report\notify_icons_sheet.png`。
+
+通知图标**没有用户目录覆盖路径**，只能替换插件包内文件，而且**插件更新/重装会把它覆盖回原版**（本机就发生过：2026-10-16 插件更新后回到了原版蓝毛小女仆图标）。安装 / 重新应用：
+
+```powershell
+$pic = "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-pet\assets\pic"
+if(-not (Test-Path "$pic\_original\notify-done.png")) {   # 只在第一次留原图备份
+  New-Item -ItemType Directory "$pic\_original" -Force | Out-Null
+  Copy-Item "$pic\notify-*.png" "$pic\_original\"
+}
+Copy-Item .\pic\notify-*.png $pic -Force
+```
+
+恢复原版 = 把 `$pic\_original\*.png` 拷回，或重装插件。注意这是**全局**的（所有宠物共用一套通知图标）。
 
 ---
 

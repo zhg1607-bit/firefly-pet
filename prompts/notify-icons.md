@@ -83,3 +83,34 @@ Q版银白长发少女歪头疑惑，一只眼睛大一只眼睛稍小，眉毛�
 
 **提示词**：
 Q版银白长发少女轻松愉快地举手打招呼，一只眼睛调皮地闭上做 wink，嘴角上扬微笑，另一只手比出一个 OK 手势；额前碎发翘起，上方飘着一个蓝色对勾（✓）；披风下摆与长发发梢轻快地摇摆。正面全身，正方形构图，透明背景，可爱扁平贴纸风格，干净描边，无文字，角色完整入画不裁切。
+
+---
+
+## 成品文件（已随仓库提供，无需自己生成）
+
+6 张图标已经生成完毕，就在本仓库 **`pic\`** 目录：
+
+| 文件 | 含义 |
+| --- | --- |
+| `pic\notify-done.png` | 对话完成（银发少女 + 绿色 ✓） |
+| `pic\notify-error.png` | 生成失败 / agent 错误（+ 红色 ✕） |
+| `pic\notify-truncated.png` | 输出被截断（+ 灰色 …） |
+| `pic\notify-approval.png` | 权限申请（+ 琥珀色 !） |
+| `pic\notify-question.png` | 用户选择 / 等待回答（+ 蓝色 ?） |
+| `pic\notify-test.png` | 测试通知（+ 橙色 ⚡） |
+
+均为 512×512、透明底、同一角色同一画风；对照图见 `report\notify_icons_sheet.png`。
+
+**怎么装上：** 通知图标没有用户目录覆盖路径，只能替换插件包内的同名文件——
+
+```powershell
+$pic = "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-pet\assets\pic"
+if(-not (Test-Path "$pic\_original\notify-done.png")) {   # 第一次先备份原图
+  New-Item -ItemType Directory "$pic\_original" -Force | Out-Null
+  Copy-Item "$pic\notify-*.png" "$pic\_original\"
+}
+Copy-Item .\pic\notify-*.png $pic -Force
+```
+
+> ⚠️ **插件更新/重装会把图标覆盖回原版**（本机 2026-10-16 插件更新后就回到原版蓝毛小女仆图标了），更新后重跑上面这两行即可。
+> 恢复原版 = 把 `$pic\_original\*.png` 拷回，或重装插件。
