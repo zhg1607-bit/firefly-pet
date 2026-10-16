@@ -1,179 +1,323 @@
-# 流萤桌宠 · Firefly Pet 🦋
+# 桌面宠物素材生产包 · 定制版（dsh-pet）
 
-一只住在你 Windows 桌面上的 **Q 版《崩坏：星穹铁道》流萤（Firefly）** 桌宠。
-
-**完全独立运行**：不需要 DSH、不需要 agent、不需要浏览器——双击启动，她就会以透明置顶小窗的形式出现在屏幕右下角，之后就算把所有终端都关掉，她也一直在。
-
-本项目的形态与交互灵感来自开源项目 [dsh-pet](https://github.com/PC2005-cloud/dsh-pet)（按该项目二创约定附上原作者地址），但从零实现：动画不依赖视频素材，全部由 **手绘 SVG + CSS 关键帧** 程序化生成，因此体积小、缩放无锯齿、改色改形都容易。
-
----
-
-## 快速开始
-
-> 要求：Windows 10/11，Node.js 18+（没有的话先去 <https://nodejs.org/zh-cn> 装一个）。
-
-1. 双击 **`启动桌宠.cmd`**。
-   - 第一次运行会自动安装 Electron（约 100MB，需联网）；
-   - 之后每次双击都是秒开。
-2. 桌面上会出现一只 Q 版流萤。右键她（或托盘图标）打开菜单。
-3. （可选）双击 **`创建桌面快捷方式.cmd`**，把「流萤桌宠」放到桌面。
-4. （可选）托盘菜单勾选 **开机自启**，以后开机她自动上班。
-
-常用脚本：
-
-| 文件 | 作用 |
-| --- | --- |
-| `启动桌宠.cmd` | 一键启动（自动装依赖、自动同步运行时） |
-| `安装依赖.cmd` | 只安装 Electron 依赖 |
-| `启动桌宠-调试.cmd` | 调试模式：开发者工具 + 日志（`%APPDATA%\firefly-pet\firefly-pet.log`） |
-| `诊断.cmd` | 诊断模式：完整应用日志 + Chromium 底层日志 |
-| `创建桌面快捷方式.cmd` | 桌面快捷方式 |
-| `_sync-electron.cmd` | 内部脚本：把 Electron 运行时同步到工作区外的缓存 |
-
-命令行参数（调试用）：`--dev`（开 DevTools）、`--verbose`（写日志）、`--reset`（恢复默认配置）、`--safe`（禁用硬件加速，透明窗黑屏时用）、`--no-roam`、`--no-top`、`--size=300`。
+> 把 [dsh-pet](https://github.com/PC2005-cloud/dsh-pet) 的整套 10 秒动作提示词改写成了**你自己的角色**（银白长发披风少女），并在本机搭好一条**一键素材链**：
+>
+> **AI 视频工具生成绿幕 mp4 → 去水印 → 绿幕抠像 → 画布归一化 → 缩略图 → 透明 webm（VP9-alpha）→ 直接进桌宠插件播放。**
+>
+> 提示词共 **106 个动作 + 6 张通知图标 + 4 张表情包**，全部按你提供的角色三视图设定表（`character/reference.png`）重写过。
 
 ---
 
-## 她都会什么
+## 仓库内容速览
 
-### 常态行为
-- **待机**：呼吸起伏、眨眼、眼睛跟着鼠标转、发丝与机械翼羽随风飘、胸口能量核心脉动、身旁萤火粒子环绕；
-- **自动漫游**：每隔几秒自己决定「走两步」或「原地小动作」（东张西望 / 伸懒腰 / 哼歌 / 坐下 / 召唤小蝴蝶），走路时小短腿交替迈步、身体轻颠；
-- **睡觉**：闲置一段时间（默认 3 分钟）就原地打盹——闭眼、深呼吸、Zzz；碰一下就醒；
-- **自言自语**：头顶偶尔冒气泡说话（台词会随互动变化，可关）。
+本仓库 = **成品 + 配方 + 工具链**：clone 下来既能直接装进 DSH 桌宠用，也能从零复现整套素材。
 
-### 互动
-| 操作 | 反应 |
-| --- | --- |
-| 单击**头** | 物理下压（挤压回弹）+ 撒娇台词（偶尔附带害羞/开心表情） |
-| 单击**身体** | 物理小跳 + 侧向推力，并从「表情 + 形态」18 项混合池随机抽一个反应（气泡报出名称） |
-| 单击**法杖 / 蝴蝶** | 被吓一跳：向上弹起 + 惊讶表情 |
-| 单击**长发** | 头发台词 + 蝴蝶粒子 |
-| **连点 3 次** | 生气（💢）并随机向一侧弹开 |
-| **连点 5 次** | 晕乎乎（💫）并打转弹开 |
-| **双击** | 原地 720° 转圈 + 星光 |
-| **拖拽** | 被抓起来：腿乱蹬、脸跟着鼠标转、气泡惊呼 |
-| **甩出去** | 抛物线飞行（朝运动方向倾斜）+ 屏幕边缘反弹 + 落地挤压回弹 |
-| 右键 | 「表情」「形态（17 种）」「形态巡演」「动作」「大小」等完整菜单 |
-| 快捷键 | F1 摸头 · F2 投喂 · F3 萤火全开 · F4 扔出去（窗口有焦点时） |
+| 路径 | 内容 | 类型 |
+| --- | --- | --- |
+| `pet-config\银白少女-config.jsonc` | 桌宠配置（19 条 AI 动画的池、权重、事件映射） | 成品 |
+| `dist\webm\` | **106 条透明动画成品**（VP9-alpha，2160×1215） | 成品 |
+| `memes\` | 4 张表情包 PNG（微笑/眨眼/惊讶/害羞） | 成品 |
+| `jimeng-prompts\` | 106 个动作的**单条配方**（约 2KB/条，可直接粘进 AI 视频工具） | 配方 |
+| `prompts\` | 配方合订本（`action-10s.md`）、通知图标提示词、动作名对照表 | 配方 |
+| `character\` | 角色母版：绿幕首帧 `first_frame_green.png`、立绘、三视图设定表 | 配方 |
+| `tools\` | 自研工具（程序化引擎 `puppet_engine.py`、批量提交、配置校验、视频体检、总览图） | 工具链 |
+| `scripts\` `run_pipeline.ps1` | 素材链：去水印 → 抠像 → 归一化 → 缩略图 → 透明 webm | 工具链 |
+| `report\` | 生产记录、总览图、体检表、审计报告 | 文档 |
 
-> 点击不是单纯播动画：所有点击都换算成**物理冲量**（方向由点击位置决定、连点会叠加），走同一套重力/反弹/地面模型，落地时按冲击量做挤压回弹。
+> **没有随仓库上传的**：`video\`（AI 生成的绿幕源 mp4，约 314MB）、`step01\`~`step04\`（素材链中间产物，约 1.5GB）、`work\`（工作区）、`.tools\`（ffmpeg 二进制，约 315MB）。这些都是本地产物——`video\` 里的源片由 AI 工具产出，其余全部能由 `run_pipeline.ps1` 重新生成。
 
-### 形态（17 种）· 表情
-- **形态**：对应鼠标指针皮肤的 17 种角色状态（正常选择 / 帮助 / 后台运行 / 忙碌 / 精确定位 / 文本 / 手写 / 不可用 / 垂直·水平·对角调整 / 移动 / 候选 / 链接 / 位置 / 人员），各自有独立微动作与符号特效；右键菜单 →「形态（17 种）」→「▶ 形态巡演」可依次演示。
-- **表情**：开心 / 生气 / 惊讶 / 疑惑 / 难过 / 得意 / 点赞 / 加油打气 / 点头 / 摇头 / 晕乎乎 / 害羞，配对应符号粒子（💢 ❗ ❓ 💧 👍 🎵 ⚡ 💫 ✨）与台词。
+### 一键装进 DSH 桌宠
 
-### 右键 / 托盘菜单
-- **互动**：摸摸头、投喂能量块、让她说句话、东张西望、哼歌、打瞌睡、坐下、召唤小蝴蝶、**战斗形态（萨姆）**；
-- **动作**：随便走走、把她扔出去、睡觉/唤醒、回到右下角；
-- **设置**：自动漫游、始终置顶、鼠标穿透（点不到她时用）、四档大小（160/220/300/380，或 +20/-20 微调）、开机自启；
-- **其他**：打开配置文件夹、查看日志、退出。
-
-### 多显示器
-支持多屏：漫游和抛掷都按各屏工作区为界，可以在两块屏幕之间拖着走、扔着飞。
-
----
-
-### 启动机制（重要）
-
-本项目的源码放在 DSH 工作区里，但**这台机器的 DSH 工作区会拦截「从工作区目录内启动的程序」**（electron.exe 从工作区内启动会瞬间崩溃，退出码 STATUS_BREAKPOINT，表现为"双击后闪一下就没"）。因此启动器会自动把 Electron 运行时**同步到工作区外的缓存**再启动：
-
-- 缓存位置：`%LOCALAPPDATA%\FireflyPet\electron\`（版本不变时只同步一次，秒开）；
-- 应用代码仍在项目文件夹里，只是**运行时二进制**从工作区外执行；
-- **DPI 适配**：本机为 125% 缩放且装有向日葵虚拟显示器（OrayIddDriver），按显示器 DPI 感知的透明窗会被 DWM 反复放大（每帧 +1px 的膨胀循环）。程序已改为系统 DPI 模式 + 注册表读取缩放系数补偿窗口尺寸，窗口大小在任何缩放/远程桌面环境下都保持稳定；
-- 所以：**不要把整个项目移出工作区后还指望「开机自启」指向旧路径**——移动后重新双击一次 `启动桌宠.cmd` 即可（托盘菜单重新勾选开机自启）。
-
-## 配置
-
-配置文件：`%APPDATA%\firefly-pet\config.json`（托盘 → 打开配置文件夹）。改完重开桌宠生效。
-
-```jsonc
-{
-  "size": 220,            // 宠物宽度 px（120~460）
-  "marginX": 40,          // 首次启动在右下角时的横向边距
-  "marginY": 90,          // 首次启动离任务栏的高度
-  "roam": true,           // 自动漫游
-  "topmost": true,        // 始终置顶
-  "clickThrough": false,  // 鼠标穿透（开启后点不到她，用托盘菜单关闭）
-  "speech": true,         // 气泡说话
-  "autoLaunch": false,    // 开机自启
-  "sleepAfterSec": 180,   // 闲置多少秒后自己睡觉（0 = 不睡）
-  "walkSpeed": 110,       // 漫游速度 px/s
-  "gravity": 2200,        // 抛掷物理：重力
-  "bounce": 0.48,         // 边缘/地面反弹系数
-  "friction": 0.86,       // 落地摩擦
-  "affection": 0          // 好感度（摸头会涨，影响部分台词，先养着）
-}
+```powershell
+$dst = "$env:USERPROFILE\.dsh\dsh-pet\pet"
+New-Item -ItemType Directory "$dst\银白少女-animation","$dst\银白少女-memes" -Force | Out-Null
+Copy-Item .\dist\webm\*.webm                 "$dst\银白少女-animation\"
+Copy-Item .\memes\*.png                      "$dst\银白少女-memes\"
+Copy-Item .\pet-config\银白少女-config.jsonc   "$dst\银白少女-config.jsonc"
 ```
 
-位置、大小、开关都在使用过程中自动保存；`--reset` 参数一键恢复默认。
+装完刷新 DSH 桌面端（Ctrl+F5）即可看到「银白少女」。
+
+配置里**只激活了 19 条可灵 AI 生成的动作**，其余 87 条程序化动画留在 `dist\webm\` 里备用——想启用就把名字加进 `animations.categories[].actions`（随机池）、`animations.clicks`（点击池）或 `animations.events.*`（事件池），改完用 `python tools\validate_config.py` + `python tools\verify_deploy.py` 校验一遍即可。**注意两个硬约束**：`animations.turn`（转身）不能为空，且**不能与 `moves` 池重名**；随机池里的名字不能同时出现在 `events` 池里（否则随机链会失效）。
 
 ---
 
-## 项目结构
+## 目录结构
 
 ```
-firefly-pet/
-├─ 启动桌宠.cmd / 安装依赖.cmd / 创建桌面快捷方式.cmd / 启动桌宠-调试.cmd
-├─ package.json / pnpm-workspace.yaml
-├─ scripts/         开发与验证脚本
-│  ├─ smoke-main.js     主进程冒烟测试（伪 electron 模块：配置/窗口/抛掷物理/落地面）
-│  └─ smoke-renderer.js 渲染端冒烟测试（jsdom：精灵注入/点击/大招/状态机/拖拽上报）
-└─ src/
-   ├─ main/            Electron 主进程
-   │  ├─ main.js       窗口 + 60Hz 运动学（拖拽/抛掷/反弹/行走/漫游）+ 托盘 + 自启
-   │  ├─ config.js     配置读写与归一化
-   │  └─ preload.js    contextBridge 安全桥
-   └─ renderer/        渲染进程（无 Node，纯 Web）
-      ├─ index.html
-      ├─ sprite.js     手绘 SVG：流萤本体（340x506 坐标系）
-      ├─ style.css     全部 CSS 关键帧动画
-      ├─ fx.js         粒子（星光/爱心/蝴蝶/Zzz/能量）
-      └─ renderer.js   状态机：动作映射、挤压拉伸、眼睛跟随、气泡、指针上报
+dsh-pet-custom\
+├─ run_pipeline.ps1          一键素材链（核心入口）
+├─ character\
+│  ├─ reference.png          角色三视图设定表（原图，所有 AI 生成的参考基准）
+│  ├─ first_frame_green.png  绿幕首帧（喂给 AI「图生视频」的起始帧）
+│  ├─ front_stand.png        角色立绘（程序化引擎的角色母版）
+│  └─ head.png               头部特写（表情/聚焦参考）
+├─ prompts\                  改写后的提示词
+│  ├─ action-10s.md          106 个 10 秒动作（合订本，含角色设定卡 + 通用前缀）
+│  ├─ actions\               001-<动作名>.txt … 106-<动作名>.txt（单条可粘贴版）
+│  ├─ notify-icons.md        6 张系统通知图标提示词
+│  └─ 动作名对照表.md         定制动作名 ↔ 上游动作名 ↔ 推荐文件名
+├─ jimeng-prompts\           106 条单动作配方（约 2KB/条，直接粘进 AI 视频工具）
+├─ scripts\                  素材链脚本（上游原版 + 本包修补）
+├─ .tools\                   自带 ffmpeg（脚本按这个固定路径找它）      ← 本仓库未含
+├─ video\                    ① 放 AI 工具生成的 10 秒绿幕 mp4 到这里   ← 本仓库未含
+├─ step01\ … step04\         ② 各阶段产物（断点续跑，可随时删）         ← 本仓库未含
+├─ dist\webm\                ③ 最终透明 webm 汇总（106 条，已随仓库提供）
+├─ memes\                    表情包 PNG（微笑/眨眼/惊讶/害羞）
+├─ tools\                    本包自研工具（程序化引擎、批量提交、配置校验、视频体检、总览图）
+└─ report\                   各种审计/对照报告与总览图
 ```
-
-### 设计要点
-- **窗口只属于宠物**：透明、无边框、置顶、不进任务栏，大小刚好包住本体 + 头顶气泡；透明区域鼠标自然穿透；
-- **主进程管位置，渲染进程管表情**：拖拽/甩抛/行走全部由主进程 60Hz 积分，渲染端只把运动状态翻译成挤压、拉伸、朝向与动画——和 dsh-pet 桌面模式同一套「两端分工」思路；
-- **动画零素材**：所有动作都是 CSS 关键帧 + SVG 分组变换，`prefers-reduced-motion` 下自动降级；
-- **配置坏掉也能跑**：任何非法字段回落到默认值。
-
-### 开发与验证（无需图形界面）
-项目自带两个冒烟测试，分别用「伪 electron 模块」和 jsdom 验证两端逻辑：
-
-```sh
-node scripts/smoke-main.js        # 主进程：窗口参数、抛掷物理落地面、多屏反弹、配置持久化
-node scripts/smoke-renderer.js    # 渲染端：精灵注入、点击互动、大招、状态机、拖拽/右键上报
-# 渲染端测试需要先装 jsdom（一次性）：
-#   pnpm --dir build/jsdom-env add jsdom   （先在 build/jsdom-env 放一个 package.json）
-```
-
-另外可以用 `node -e "global.window={};require('./src/renderer/sprite.js');console.log(global.window.FIREFLY_SPRITE.build().length)"` 快速确认 SVG 精灵能正常生成。
 
 ---
 
-## 故障排查
+## 快速开始（三步）
 
-| 症状 | 处理 |
-| --- | --- |
-| 双击启动后没反应 | 用 `诊断.cmd` 跑一次：它会打开应用日志（`%APPDATA%\firefly-pet\firefly-pet.log`） |
-| 双击后闪一下就没了 | 已针对本机环境修复（DSH 工作区禁止从工作区内启动程序 + Electron 空环境变量 abort + 批处理编码），启动器会自动把运行时缓存到 `%LOCALAPPDATA%\FireflyPet\electron\` 并从那里启动；若仍复现，跑 `诊断.cmd` 并查看退出码 |
-| 宠物变成黑色方块 | 个别显卡驱动下透明窗有问题：用 `诊断.cmd`（内置 `--safe` 禁用硬件加速），或给 `启动桌宠.cmd` 追加 `--safe` |
-| 点不到她 / 她挡住图标 | 托盘菜单勾选「鼠标穿透」；想取消穿透用**托盘图标**（她点不到时只有托盘能管她） |
-| 宠物跑出屏幕 | 托盘 → 动作 → 回到右下角；或删除 `%APPDATA%\firefly-pet\config.json` |
-| 想换颜色/改台词 | 改 `src/renderer/sprite.js`（配色）与 `renderer.js`（LINES 台词），然后重启 |
+### 第 0 步 · 装好桌宠插件（一次性）
 
-> 注：`启动桌宠.cmd` 等批处理文件以 **GBK + CRLF** 编码保存（中文控制台兼容）；用编辑器修改后若出现乱码/解析错误，请另存为该编码。日志文件始终写在 `%APPDATA%\firefly-pet\firefly-pet.log`。
+```powershell
+dsh plugin --profile desktop add dsh-pet
+```
 
-## 常见问题
-- **会占用多少资源？** 空闲时 CPU 接近 0%（纯 CSS 动画），内存约 80~120MB（Electron 壳）。
-- **能在任务栏隐藏吗？** 窗口本来就不进任务栏，只有托盘图标。
-- **能同时开两只吗？** 单实例锁默认只让开一只（再双击会唤醒已有的）；想要两只可改 `config.json` 的 `id` 机制——当前版本未做多开，欢迎自己动手。
+> 本机**已经装好了**（`dsh-pet 0.3.7`，已列入 `profiles\desktop\package.json` 的 bundles），无需重复安装。
+> 真 CLI 路径：`E:\dsh\resources\runtime\cli\bin\dsh.cmd`（`C:\Users\PC-7020\.dsh\bin\dsh-tui.cmd` 只是它的 `--profile tui` 包装）。
+
+插件装好后，你的素材放进用户目录即可**零配置覆盖**内置动画（见第 3 步）。
+
+### 第 1 步 · 用 AI 视频工具生成绿幕视频
+
+1. 打开 `prompts\actions\` 目录，每条 `*.txt` 文件 = 一个 10 秒动作的完整提示词（已自动拼好**角色设定卡 + 通用前缀 + 该动作**）。
+2. 把 `character\reference.png` 作为**角色参考图 / 首帧参考**上传给 AI 视频工具（可灵、豆包、Runway 等）。
+3. 生成出来的视频按以下规格存放：
+
+| 项目 | 要求 |
+|---|---|
+| 路径 | `video\<文件名>.mp4` |
+| 文件名 | **强烈建议用「原版动作名」**（见 `prompts\动作名对照表.md`），这样部署后插件零配置直接识别 |
+| 画幅/时长 | 16:9，1280×720，约 10 秒 |
+| 背景 | 纯绿幕 `#00FF00`，无阴影、无渐变、无杂物（提示词里的通用前缀已强制约束） |
+| 首尾帧 | 第一帧 = 标准正面站立、无任何道具；最后一秒回到同一姿态（道具闭环） |
+
+> 一次生成 106 个动作很费时，建议先挑几个（比如「待机呼吸休闲」「点头开心」「开心跳跃」）跑通全流程再批量。
+
+### 第 2 步 · 一键跑素材链
+
+```powershell
+cd dsh-pet-custom
+pwsh -File run_pipeline.ps1 -Clean -Deploy
+```
+
+脚本会自动完成：
+
+```
+① 去水印     video\*.mp4     → step01\*.mp4
+② 绿幕抠像   step01\*.mp4    → step02\*.webm  （VP9-alpha 透明视频）
+③ 画布归一化 step02\*.webm   → step03\*.webm  （2160×1215 画布、角色高 900px、脚底固定 1115px）
+④ 缩略图     step03\*.webm   → step04\*.webm  （640×360，插件实际播放的格式）
+⑤ alpha 校验 step04\*.webm
+⑥ 汇总       → dist\webm\
+⑦ 部署       → %DSH_HOME%\dsh-pet\main-animation\webm\   （仅 -Deploy）
+```
+
+### 第 3 步 · 让桌宠动起来
+
+有**两条部署路线**，先想清楚「给谁换素材」：
+
+**路线 A · 主素材链（换掉原有宠物的动画）**
+
+```powershell
+pwsh -File run_pipeline.ps1 -Clean -Deploy
+```
+
+`-Deploy` 把 `dist\webm\*.webm` 拷进 `%DSH_HOME%\dsh-pet\main-animation\webm\`。用户目录素材优先于插件包内置素材，**文件名对应上内置动画名就是零配置替换**。
+注意：主配置（`main-config.jsonc`）里的**所有**宠物共用这一条主链——动画不分宠物，只按文件名区分。
+
+手动等价命令：
+
+```powershell
+Copy-Item step04\*.webm "$env:DSH_HOME\dsh-pet\main-animation\webm\"
+```
+
+**路线 B · 文件宠物 / pet pack（独立素材 + 独立人设，给自己的角色用推荐这条）**
+
+`%DSH_HOME%\dsh-pet\pet\` 下一个文件 = 一个条目（**文件名前缀 = 素材根 = 条目 key**，中文合法）：
+
+```
+pet\<名>-config.jsonc      ← 条目配置（pets / whisperPrompt / memes / animations 池…）
+pet\<名>-animation\*.webm  ← 这只宠物专用的动画；该目录一旦存在就只查它，缺失即 404，绝不回落主链
+pet\<名>-memes\*.png       ← 这只宠物专用的表情包（键 = 配置里 memes 的键）
+```
+
+文件宠物的特性：**独立人设**（`whisperPrompt`）、**独立表情包**、**独立动画池**，与主配置宠物互不干扰；但它在设置页里改的尺寸/位置**不会写盘**，要改就手改那个 `-config.jsonc`。
+
+> 本包已用路线 B 部署好一只额外宠物「**银白少女**」，原有 2 只（蓝毛小女仆 / 蓝毛小肥鱼）配置一字未动 —— 详见 `report\deploy_pet.md`。
+
+最后**刷新 DSH 页面（Ctrl+F5）**：配置每次请求都重读，但素材有 `max-age=3600` 的 HTTP 缓存，普通刷新可能还在用旧图。桌面端宠物若没出现，重启 DSH 桌面端。
 
 ---
 
-## 声明与致谢
+## run_pipeline.ps1 参数
 
-- 交互形态与「桌面模式」思路参考 [PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet)（MIT 许可），按该项目的二创约定附上原项目地址；
-- 「流萤 / Firefly / 萨姆」是《崩坏：星穹铁道》（© HoYoverse / miHoYo）的角色。本项目为**粉丝同人作品**，全部形象为代码手绘的 Q 版二次创作，**仅供个人学习娱乐，禁止商用**；
-- 代码以 MIT 许可开源（见 `LICENSE`）。
+| 参数 | 作用 |
+|---|---|
+| `-Python <路径>` | 指定 python.exe。不传则自动探测（DSH 内置运行时优先，逐个真跑依赖自检） |
+| `-SkipWatermark` | 跳过第 0/1 步去水印（源视频本来就没水印时用） |
+| `-BlackVideo <路径>` | 纯黑参考视频路径（用于做水印蒙版），默认 `work\black_10s.mp4` |
+| `-Clean` | 先清空 step01~step04、dist 再从头跑 |
+| `-NoDist` | 不往 `dist\` 汇总 |
+| `-Deploy` | 跑完自动拷进插件的用户素材目录 |
+
+示例：
+
+```powershell
+pwsh -File run_pipeline.ps1                        # 增量跑（已完成的步骤自动跳过）
+pwsh -File run_pipeline.ps1 -Clean -Deploy         # 干净重跑 + 部署
+pwsh -File run_pipeline.ps1 -SkipWatermark -Deploy # 无自带水印的视频直接抠像
+```
+
+**断点续跑**：每一步都会检查「产物存在 + 够大 + 不比源旧 + ffprobe 能读」，已完成的文件自动跳过——批量生成视频时可以边产边跑，中断后重跑只补增量。
+
+---
+
+## 去水印（可选，AI 工具带水印时才有用）
+
+AI 视频工具导出的视频常带平台水印，且绿幕背景上的水印会破坏抠像。做法：
+
+1. 用**同一个工具**生成一段 10 秒**纯黑**视频（水印位置/大小必须与素材视频完全一致），存成 `work\black_10s.mp4`；
+2. 脚本自动用 `scripts\make_mask_black.py` 把水印区域转成蒙版 `video\watermark_mask_v5.mkv`，再用最近邻填充把水印抹掉。
+
+> 没有黑视频也没关系：脚本检测到缺蒙版时会**自动跳过第 1 步**并把源视频原样送进抠像，只是水印会残留在画面里（糊在右下角背景上，通常不影响前景角色）。用剪映/PR 自己导出、或工具本就不带水印的话，直接 `-SkipWatermark`。
+
+---
+
+## 动作名对照（重要）
+
+定制版把 106 个动作全部改写成你的角色。**部署到「银白少女」pet pack 后，文件名与配置名以「定制版动作名」为准**（因为该 pet pack 用的是自己的配置文件，配置里写什么名字就找什么文件）：
+
+- `prompts\动作名对照表.md`：三列对照（序号 | 定制动作名 | 原版动作名）；
+- 有 5 个动作刻意改了名，**配置与 webm 文件名必须同时用定制版名**：
+
+  | 原版动作名 | 定制版动作名 |
+  |---|---|
+  | 女仆屈膝礼仪 | 优雅屈膝礼仪 |
+  | 鲸鱼吐泡泡特效 | 梦幻泡泡特效 |
+  | 用鲸鱼尾巴拍打地面 | 甩动披风下摆拍地 |
+  | 蓝鲸现世 | 薄荷灵蝶现世 |
+  | 优雅女仆舞 | 优雅回旋舞 |
+
+- 其余 101 个名字两版一致；
+- 插件内置配置（`node_modules\dsh-pet\assets\config.jsonc`）里**本来就完整引用了全部 106 个名字**，所以 `pet-config\银白少女-config.jsonc` 直接沿用了它的官方分组（小动作 20 / 玩耍 20 / 吃什么 16 / 时节 14 / 文字 10 + 动画链 idle 10 / turn 5 / move 5 = 100）。
+
+校验工具：
+
+```powershell
+python tools\validate_config.py   # 配置里的名字 vs jimeng-prompts 的 106 个动作，必须完全对齐
+python tools\verify_deploy.py     # 部署后：配置里每个名字都要有对应的 webm，且无孤儿文件
+```
+
+改写映射一览（角色差异处理）：
+
+| 原版（上游角色：Q版蓝发女仆+鲸鱼尾巴） | 定制版（你的角色） |
+|---|---|
+| 蓝发 / 蓝发女仆 | 银白长发 / 银白长发少女 |
+| 鲸鱼尾巴、鱼尾 | **披风下摆与长发发梢** |
+| 鱼鳍、鳍饰 | **披风肩摆** |
+| 呆毛（155 处） | **额前碎发**（角色头顶是平滑波浪发，无呆毛） |
+| 围裙、手套 | 披风前襟、长筒袜 |
+| 海洋生物属性 | 轻盈飘逸的仙气 |
+| 动物环绕（海豚/水母） | 小银兔 / 小灵蝶 |
+| 「蓝鲸现世」动作 | 「**薄荷灵蝶现世**」：胸前橙色蝶翼宝石胸针发光、飞出薄荷色灵蝶 |
+
+---
+
+## 表情包（4 张，已部署）
+
+`memes\` 里是从设定表底部表情参考行裁好的 4 张半身表情（微笑 / 眨眼 / 惊讶 / 害羞，保留设定表原设计的薄荷色圆角卡片底，四角透明）。
+
+**已经部署**到「银白少女」pet pack 目录（`pet\银白少女-memes\{微笑,眨眼,惊讶,害羞}.png`），并在 `pet\银白少女-config.jsonc` 的 `memes` 字段里写好键值描述。碎碎念会随机抽 1 张配图，对话时模型按描述选图（回复末尾输出 `[图:名称]`）。
+
+想改成「主素材链」那两只宠物也用这 4 张：拷到 `%DSH_HOME%\dsh-pet\memes\`，再把 `report\memes_config.jsonc` 的键值对并进 `main-config.jsonc` 的 `"memes"`（会**替换**掉原有的 27 张鲸鱼表情；先备份 `main-config.jsonc` 即可随时回退）。
+
+> 想重裁（比如换了参考图）：跑 `python tools\probe_faces.py` 定位表情区域，改 `tools\make_memes.py` 里的 REGIONS 坐标再跑。
+
+## 通知图标（6 张，已替换）
+
+`prompts\notify-icons.md` = 6 张系统通知图标提示词（对话完成 / 生成失败 / 输出截断 / 权限申请 / 用户选择 / 测试），已改写为你的角色；成品在 `work\icons\`（512×512 透明底）与对照图 `work\icons_sheet.png`。
+
+**已经替换**进插件包 `profiles\desktop\node_modules\dsh-pet\assets\pic\notify-*.png`（原图备份在 `work\backup\pic\`）。通知图标**没有用户目录覆盖路径**，只能这样替换，且**插件更新会被覆盖**；恢复原图标 = 把 `work\backup\pic\*.png` 拷回包内同名路径。注意这是**全局**的（所有宠物共用一套通知图标）。
+
+---
+
+## 环境说明 / 常见问题
+
+**Q：提示找不到 ffmpeg？**
+本包已自带（`.tools\ffmpeg-9.0.1-essentials_build\`，含 ffmpeg/ffprobe，编码器齐全）。脚本按这个**固定路径**找它，别移动；换机器时把整个 `.tools` 目录一起拷走即可。
+
+**Q：提示找不到可用的 python？**
+脚本会按「DSH 内置运行时 → 用户目录 → PATH」逐个探测，并真实跑一次 `import numpy, scipy, PIL` 自检（Windows 自带的商店占位 python.exe 会被识破跳过）。仍失败就用 `-Python` 指定，例如：
+`pwsh -File run_pipeline.ps1 -Python "$env:DSH_HOME\dsh-runtimes\dsh-primary-runtime\dependencies\python\python.exe"`
+
+**Q：控制台中文乱码？**
+本机 PowerShell 是 5.1，`.ps1` 文件必须**带 UTF-8 BOM**（本包已带）。若你用编辑器改过 `run_pipeline.ps1` 后中文变乱码/语法报错，多半是 BOM 被去掉了——另存为「UTF-8 with BOM」即可。
+
+**Q：alpha 校验报 `!! LOST`？**
+说明成品透明通道丢了。常见原因：源视频背景不是纯 `#00FF00`（有阴影/渐变/杂物）。检查 `video\` 源文件，或单独重跑 `python scripts\check_alpha.py step04\*.webm` 定位。
+
+**Q：角色位置/大小在插件里不对？**
+第 ③ 步归一化会把每个视频缩放到统一规格（角色高 900px、脚底 y=1115，居中于 2160×1215 画布），并写出 `step03\params.json` 供核对。若角色忽大忽小，说明源视频的人物比例不一致——重新生成时严格按提示词通用前缀的位置约束（头顶 20%、脚底 85%、左右 25%/75%）执行。
+
+**Q：中间产物能删吗？**
+能。`step01~step04`、`work\`、`dist\` 都是可再生产物，`-Clean` 会清掉重跑。`video\` 是源素材、`character\` 是参考图，别删。
+
+---
+
+## 合成测试（本包已跑通验证）
+
+用 `tools\make_test_videos.py` 生成了合成替身视频（纯绿幕 + Q 版小人 + 右下角假水印 + 半透明泡泡）做了端到端验证：
+
+- 水印被最近邻填充抹掉（蒙版 16400 px/帧）→ 抠像后透明通道干净（alpha min 0 / max 255）→ 归一化后角色居中、内容边界不含水印区（`content_union x 465~813`，水印在 x 980~1250）→ 缩略图 640×360 正常。
+- 结果文件：`dist\webm\test-stand.webm`（0.37 MB）。想自己复现：`python tools\make_test_videos.py` 然后 `pwsh -File run_pipeline.ps1 -Clean`。
+
+---
+
+## 本机全量生产记录（106 条）
+
+本包实际产出过全套 106 个动作，来源分两类：
+
+| 来源 | 条数 | 工具 | 说明 |
+|---|---|---|---|
+| AI 视频生成 | 20 | 可灵 `kling-video-v2_5`（10s / 720p / 24fps） | 11 条核心交互（待机/点击×5/拖拽/转身/走路…）+ 9 条事件（工作状态×6、碎碎念×3）；每条扣 30 积分 |
+| 程序化渲染 | 86 | `tools\puppet_engine.py` | 2D 纸偶形变，纯离线免费；`--only <名字…> --jobs 3` 跑 86 条耗时 2474 s |
+
+- **为什么不用即梦**：即梦画布对「Q 版动漫少女」类素材整体触发内容审核（`errorCode 20109`）。原图、裁掉下半身、换长裙、乃至用即梦自己的图生图重绘后再喂视频——**四种方式全部被拦**，故改用可灵。
+- 可灵片子经 `tools\probe_video.py` 体检：绿幕占比 88.5~88.7%、角色 bbox 居中、**无第三方水印**，因此素材链统一加 `-SkipWatermark`。
+- 程序化片子背景是精确 `#00FF00`（非近似绿色），可直接进素材链。
+- 全量素材都在 `video\`（106 个 mp4）；20 条 AI 原片另有一份备份在 `work\ai-video-backup\`。
+
+**实跑结果**：素材链 `run_pipeline.ps1 -SkipWatermark`（增量，不清场）跑通 **106/106 alpha OK**（用时 2820.5 s）→ `dist\webm` 106 个 → `tools\deploy_silver_pet.ps1` 部署到 `%USERPROFILE%\.dsh\dsh-pet\pet\银白少女-animation\`（106 个 webm）+ `银白少女-config.jsonc`（7263 B）。`tools\verify_deploy.py` 报「106 引用 / 106 文件 / 0 缺失 / 0 孤儿 / 0 重复 全部通过」；抽检 HTTP `/dsh-pet-7340/thumb/银白少女/<名>.webm` 均返回 `200 video/webm`。
+
+> ⚠️ **踩坑记录**：本机 PowerShell 是 **5.1**，`.ps1` 文件**必须带 UTF-8 BOM**。`tools\deploy_silver_pet.ps1` 当初是用不带 BOM 的 UTF-8 写的，结果 5.1 把中文字符串的字节解码错、引号提前截断，脚本**只打印“部署 106 个 webm/完成”的日志却一个文件都没拷**（`$ErrorActionPreference='Stop'` 也没报错）。补上 BOM 后立即正常。凡是中文 `.ps1`，写完都要检查前 3 字节是 `EF BB BF`。
+
+### 交付形态 v5：只保留 AI 动画（19 条）
+
+106 条虽然全跑通了，但两条路线**观感差距一眼可见**（AI 片有真实的转身、位移、披风扫动；程序化片是同一张立绘的轻微形变），所以最终交付收敛为**只用可灵 AI 片**：
+
+- **20 → 19**：`东张西望` 的可灵原片有生成事故——**t≥2s 起画面里出现 3 个克隆人**（模型把“东张西望”理解成了分身）。用 `tools\check_multifigure.py`（前景连通块分析）全量复检 106 条，只有这一条中招。修复前后对比见 `report\dongzhangxiwang_before_after.png`。
+- **部署收敢**：`tools\prune_to_ai.py`（新增，幂等）按 `pet-config\银白少女-config.jsonc` 引用到的名字保留文件，其余 87 个 webm 移入 `work\proc-webm-backup\`（不删，可随时回滚）+ 重新部署配置。
+- **配置 v5 的三处结构取舍**（都写进了配置文件头注释，并且用 `tools\verify_deploy.py` 的两条不变量校验兜住）：
+  1. `categories: []` + `animationWeights = {idle:90, turn:5, move:5}`——80 条随机小动作全是程序化的，分类池只能空；空池合法（`pickWeightedCategory` 全空返回 null → 回落 idle）。内置给分类池的 80 份权重并入 idle，于是「走动/转向的触发频率」和内置宠物一致。
+  2. `turn: ["原地左转奔跑"]`——**这条不能省**。`client.js:3511` 算移动方向用的是 `dir = (facing === "right") !== turn.includes(当前动画) ? 1 : -1`，而**换朝向只发生在转向动画播完时**（`client.js:3431-3434`）。`turn` 池一旦为空，朝向永远不变 → 宠物只朝一个方向走，撞到屏幕边后 `planMove` 返回 null、`tryMove` 返回 false，**之后再也不走（卡死）**。所以必须有一条「专属转向片」，它只能出现在 `turn` 池里；如果同时兼任 `moves.actions`，每次走完都会再翻一次朝向（镜像抖动）。这里选了 AI 片 `原地左转奔跑`（本身就是边跑边转身），并从 `moves.actions` 移除，`moves` 剩 `螃蟹走路`/`原地漂浮踏步`。
+  3. `events.balance` 必须非空（插件硬校验 `balance.length > 0`，空了整份配置判非法），故 6 档余额改为**借用 AI 事件片按情绪映射**（雀跃庆祝→清点归档→思考冒泡→原地踱步张望→垂头叹气冒汗，越穷越沮丧），不再有专门的数钱/钱袋画面。余额数字本身由气泡单独显示，不受影响。
+     - ⚠️ **别名只能借用「纯事件片」（`工作状态-*` / `碎碎念-*`）**，不能借 `idle`/`clicks`/`moves` 里的名字。原因在 `lib\client.js:3405`：动画播完时用 `isEventAnim(events, 当前动画)` 判断走哪条分支，若把 idle 的「待机呼吸休闲」写进任何事件池，每次待机播完都会被判成事件动画 → 直接重播待机（`client.js:3423-3429`），**永远回不到 `pickNext()` 抽下一条**，随机链彻底失效。
+- **两条部署不变量**（`tools\verify_deploy.py` 已实装，报错会退出码 1）：① 「随机链名 ∩ 事件池名 = 空」；② 「`turn` 池非空 且 转向片 ∩ 移动片 = 空」。
+- **最终校验**：`tools\verify_deploy.py` →「25 引用 / 19 去重 / 0 缺失 / 0 空 / 0 孤儿 / 权重 100 / 表情包 0 缺失」全部通过；HTTP 实测 19/19 返回 `200`（>20KB），已移出的 `东张西望`/`余额-*`/`吃汤圆` 等返回 `404`，`main` 两只原宠物不受影响（仍取包内鲸鱼素材）。
+- **要回到 106 条**：把 `work\proc-webm-backup\` 的 87 个 webm 拷回 `银白少女-animation\`，配置换回 106 引用版即可（`dist\webm` 里 106 个 webm 仍在）。
+- 全部 106 条的缩略总览见 `report\all_106_montage.png`（蓝色 `★AI` = 可灵片，灰色「程序化」= 引擎片），体检数据 `report\all_106_probe.tsv`。
+
+---
+
+## 附录：提示词改写细节
+
+- 改写脚本：`tools\rewrite_prompts.py`（幂等可重跑，从上游提示词 → 本包 `prompts\`）。
+- 审计报告：`report\rewrite_report.md`、`report\term_scan.txt`（词频 + 冲突词扫描）。
+- 角色设定卡（12 色 hex + 禁止项负向约束）已内嵌在 `prompts\action-10s.md` 开头，每次 AI 生成都会自动带上；参考图仍是**最高优先级的角色依据**。
+- 上游原版脚本与教程见 <https://github.com/PC2005-cloud/dsh-pet>（本包 `scripts\` 即上游脚本，做了两处修补：`make_mask_black.py` 参数化加速、`check_alpha.py` 修正 ffmpeg 路径与解码器）。

@@ -1,20 +1,26 @@
-# 依赖（Electron 运行时约 930MB，不入库）
-node_modules/
+# ── 本地产物：可由 run_pipeline.ps1 从 video\ 重新生成，不入库 ──
+.tools/
+video/
+step01/
+step02/
+step03/
+step04/
+work/
 
-# 构建/调试产物：视频抽帧、渲染预览、对比图等（约 290MB）
-build/
+# ── Python ──
+__pycache__/
+*.pyc
 
-# 日志
-*.log
-npm-debug.log*
-pnpm-debug.log*
+# ── 角色设定的中间裁切图（character/_crop_*.png）──
+character/_crop_*.png
 
-# 编辑器 / 系统
-.vscode/
-.idea/
+# ── 工具临时抓取产物（即梦画布调试）──
+tools/jimeng/
+
+# ── 系统 / 编辑器 ──
 Thumbs.db
 desktop.ini
 *.tmp
-
-# 运行时生成（宠物配置保存在 %APPDATA%\firefly-pet，不在仓库内）
-render-debug.png
+*.log
+.vscode/
+.idea/
