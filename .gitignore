@@ -24,3 +24,4 @@ desktop.ini
 *.log
 .vscode/
 .idea/
+release/
