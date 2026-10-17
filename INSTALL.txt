@@ -1,0 +1,35 @@
+﻿银白少女 · DSH 桌宠素材包  v1.0.0
+========================================
+
+【前提】
+  DSH 桌面端（DeepSeek Harness）已装好，并且已经装好 dsh-pet 桌宠插件。
+  插件本体：https://github.com/PC2005-cloud/dsh-pet
+
+【三步安装】
+  1. 把本压缩包解压到任意目录（路径里尽量不要有空格）。
+  2. 双击 install.cmd ；
+     或在 PowerShell 里执行：
+         powershell -ExecutionPolicy Bypass -File .\install.ps1
+  3. 回到 DSH 桌面端按 Ctrl+F5 刷新，右下角就会出现「银白少女」。
+
+【装了什么】
+  - 19 条透明动画（VP9-alpha，2160x1215，每条 10 秒）
+      -> %USERPROFILE%\.dsh\dsh-pet\pet\银白少女-animation\
+  - 4 张表情包（微笑 / 眨眼 / 惊讶 / 害羞）
+      -> %USERPROFILE%\.dsh\dsh-pet\pet\银白少女-memes\
+  - 桌宠配置（19 条动画的随机池、点击池、事件池与权重）
+      -> %USERPROFILE%\.dsh\dsh-pet\pet\银白少女-config.jsonc
+  若目标处已有同名旧文件，脚本会先自动备份到：
+      ...\pet\_backup-银白少女-<时间戳>\
+
+【卸载】
+  删掉 pet\银白少女-animation\、pet\银白少女-memes\、pet\银白少女-config.jsonc 即可。
+
+【这是什么】
+  一套给自己的 DSH 桌宠换装的素材包：把上游 dsh-pet 的整套 10 秒动作提示词
+  改写成原创角色（银白长发披风少女），用可灵 AI 图生视频生成，再经
+  去水印 → 绿幕抠像 → 画布归一化 → 透明 webm 的素材链产出。
+
+【更多】
+  完整素材（106 个动作的配方 + 生产工具链 + 生产记录）：
+      https://github.com/zhg1607-bit/firefly-pet
